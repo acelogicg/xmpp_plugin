@@ -255,7 +255,6 @@ public class FlutterXmppConnection implements ConnectionListener {
         }
     }
 
-<<<<<<< HEAD
     public static void sendReadReceipt(String toJid, String msgId) {
         try {
             if (mConnection == null || !mConnection.isAuthenticated()) return;
@@ -277,7 +276,11 @@ public class FlutterXmppConnection implements ConnectionListener {
 
             mConnection.sendStanza(readMessage);
             Utils.addLogInStorage("Action: sentReadReceiptToServer, Content: " + readMessage.toXML().toString());
-=======
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void sendMessageRetraction(String toJid, String targetId, String retractId) {
         try {
             if (mConnection == null || !mConnection.isAuthenticated()) return;
@@ -320,6 +323,16 @@ public class FlutterXmppConnection implements ConnectionListener {
                             .addElement("value", "urn:xmpp:push:0")
                             .build())
                     .addElement(StandardExtensionElement.builder("field", null)
+                            .addAttribute("var", "jid")
+                            .addAttribute("type", "text-single")
+                            .addElement("value", pushJidFinal)
+                            .build())
+                    .addElement(StandardExtensionElement.builder("field", null)
+                            .addAttribute("var", "node")
+                            .addAttribute("type", "text-single")
+                            .addElement("value", nodeFinal)
+                            .build())
+                    .addElement(StandardExtensionElement.builder("field", null)
                             .addAttribute("var", "appid")
                             .addElement("value", appId == null ? "" : appId)
                             .build())
@@ -341,7 +354,6 @@ public class FlutterXmppConnection implements ConnectionListener {
             enableIq.setTo(JidCreate.from(pushJidFinal));
             mConnection.sendStanza(enableIq);
             Utils.addLogInStorage("Action: enablePush, Content: " + enableIq.toXML().toString());
->>>>>>> fd98fea6cc1be8c553fddbce6cf8179f03b8de41
         } catch (Exception e) {
             e.printStackTrace();
         }

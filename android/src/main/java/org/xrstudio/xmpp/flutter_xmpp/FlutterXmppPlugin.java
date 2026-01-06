@@ -511,7 +511,6 @@ public class FlutterXmppPlugin implements MethodCallHandler, FlutterPlugin, Acti
                 break;
             }
 
-<<<<<<< HEAD
             case Constants.READ_MESSAGE_METHOD: {
                 if (!call.hasArgument(Constants.TO_JID) || !call.hasArgument(Constants.ID)) {
                     result.error("MISSING", "Missing argument to_jid / id.", null);
@@ -520,7 +519,10 @@ public class FlutterXmppPlugin implements MethodCallHandler, FlutterPlugin, Acti
                 String toJid = call.argument(Constants.TO_JID);
                 String msgId = call.argument(Constants.ID);
                 FlutterXmppConnection.sendReadReceipt(toJid, msgId);
-=======
+                result.success(Constants.SUCCESS);
+                break;
+            }
+
             case Constants.RETRACT_MESSAGE: {
                 String toJid = call.argument(Constants.TO_JID);
                 String targetId = call.argument(Constants.TARGET_ID);
@@ -533,6 +535,7 @@ public class FlutterXmppPlugin implements MethodCallHandler, FlutterPlugin, Acti
                 result.success(Constants.SUCCESS);
                 break;
             }
+
             case Constants.ENABLE_PUSH: {
                 String pushJid = call.argument(Constants.PUSH_JID);
                 String node = call.argument(Constants.NODE);
@@ -542,7 +545,6 @@ public class FlutterXmppPlugin implements MethodCallHandler, FlutterPlugin, Acti
                     return;
                 }
                 FlutterXmppConnection.enablePush(pushJid, node == null ? "" : node, appId == null ? "" : appId);
->>>>>>> fd98fea6cc1be8c553fddbce6cf8179f03b8de41
                 result.success(Constants.SUCCESS);
                 break;
             }
