@@ -305,15 +305,28 @@ public class FlutterXmppConnection implements ConnectionListener {
         return muRosterList;
     }
 
-    public static void createRosterEntry(String userJid) {
-        try {
-//            rosterConnection.createEntry(JidCreate.bareFrom(Utils.getJidWithDomainName(userJid, mHost)), userJid, null);
-            rosterConnection.createItemAndRequestSubscription(JidCreate.bareFrom(Utils.getJidWithDomainName(userJid, mHost)), userJid, null);
+public static void createRosterEntry(String userJid) {
+    try {
+        if (mConnection == null) return;
+        if (!mConnection.isConnected()) return;
+        if (!mConnection.isAuthenticated()) return; // WAJIB
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (rosterConnection == null) {
+            rosterConnection = Roster.getInstanceFor(mConnection);
+            rosterConnection.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
         }
+
+        rosterConnection.createItemAndRequestSubscription(
+                JidCreate.bareFrom(Utils.getJidWithDomainName(userJid, mHost)),
+                userJid,
+                null
+        );
+
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+}
+
 
     public static boolean createMUC(String groupName, String persistent) {
 
@@ -452,36 +465,30 @@ public class FlutterXmppConnection implements ConnectionListener {
 
 public static void updatePresence(String presenceType, String presenceMode) {
     try {
-        // Guard: koneksi bisa null / belum connect / sudah disconnect
-        if (mConnection == null || !mConnection.isConnected()) {
-            return;
-        }
+        // Guard: koneksi bisa null / belum connect / sudah disconnect / belum login
+        if (mConnection == null) return;
+        if (!mConnection.isConnected()) return;
+        if (!mConnection.isAuthenticated()) return; // WAJIB
 
         Presence.Type type;
         try {
             type = Presence.Type.valueOf(presenceType);
         } catch (Exception ignored) {
-            // fallback aman
             type = Presence.Type.available;
         }
 
         Presence.Mode mode = null;
         try {
-            // mode boleh null (Smack mengizinkan)
             mode = Presence.Mode.valueOf(presenceMode);
         } catch (Exception ignored) {
             mode = null;
         }
 
         Presence presence = new Presence(type);
-        if (mode != null) {
-            presence.setMode(mode);
-        }
+        if (mode != null) presence.setMode(mode);
 
-        // Guard tambahan: kirim hanya jika masih connected
-        if (mConnection.isConnected()) {
-            mConnection.sendStanza(presence);
-        }
+        mConnection.sendStanza(presence);
+
     } catch (Exception e) {
         e.printStackTrace();
     }
